@@ -1,6 +1,7 @@
 package ch25_gui;
 
 import java.awt.CardLayout;
+import java.awt.EventQueue;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -17,64 +18,80 @@ public class GUIMain1 extends JFrame {
 	private final String ADMIN_USERNAME = "admin";
 	private final String ADMIN_PASSWORD = "1234";
 
-	private JPanel contentPane;
-	private JTextField usernameTextField;
-	private JPasswordField passwordTextField;
 	private CardLayout mainCardLayout;
 
+	private JPanel mainCardPanel;
+	private JPanel loginPanel;
+	private JPanel homePanel;
+	private JTextField usernameTextField;
+	private JPasswordField PasswordTextField;
 
 	/**
 	 * Launch the application.
 	 */
-	
 	public static void main(String[] args) {
-		GUIMain1 frame = new GUIMain1();
-		frame.setVisible(true);
-
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					GUIMain1 frame = new GUIMain1();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
+
 	/**
 	 * Create the frame.
 	 */
 	public GUIMain1() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 555, 358);
+		setBounds(100, 100, 450, 300);
+		mainCardPanel = new JPanel();
+		mainCardLayout = new CardLayout();
+		mainCardPanel.setLayout(mainCardLayout);;
+		setContentPane(mainCardPanel);
 		
+		loginPanel = new JPanel();	//로그인 패널 생성
+		loginPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		loginPanel.setLayout(null);
+		mainCardPanel.add(loginPanel,"loginPanel");	//메인카드패널 위에 로그인패널 추가하기
 		
-		contentPane = new JPanel();
-		
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(null);
-
-		setContentPane(contentPane);
-		
-		usernameTextField = new JTextField();
-		usernameTextField.setBounds(148, 93, 240, 37);
-		contentPane.add(usernameTextField);
+		usernameTextField = new JTextField();	//아이디필드 생성
+		usernameTextField.setBounds(128, 53, 190, 33);	//setBounds 위치(좌표)
+		loginPanel.add(usernameTextField);	//로그인패널에 아이디필드 추가
 		usernameTextField.setColumns(10);
+		
+		PasswordTextField = new JPasswordField();	//비밀번호 패널
+		PasswordTextField.setBounds(128, 96, 190, 33);
+		loginPanel.add(PasswordTextField);
+		PasswordTextField.setColumns(10);
+
 		
 		JButton signinBtn = new JButton("Login");
 		signinBtn.addMouseListener(new MouseAdapter() {
-			
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				String username = usernameTextField.getText();
-				String password= passwordTextField.getText();
-				if(!username.equals(ADMIN_USERNAME) || !password.equals(ADMIN_PASSWORD)) {	//둘중 하나라도 틀리면 사용자 정보가 일치하지 않다라고 출력
-					JOptionPane.showMessageDialog(contentPane, "사용자 정보가 일치하지 않습니다.", "로그인 실패", JOptionPane.ERROR_MESSAGE);
-													// 어느위치에 띄울거냐, 내용, 제목, 아이콘
+				String password = PasswordTextField.getText();
+				
+				if(!username.equals(ADMIN_USERNAME) || !password.equals(ADMIN_PASSWORD)) {
+					JOptionPane.showMessageDialog(loginPanel, "사용자 정보가 일치하지 않습니다.", "로그인 실패", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				JOptionPane.showMessageDialog(contentPane, "환영합니다.", "로그인 성공", JOptionPane.PLAIN_MESSAGE);
-												// 어느위치에 띄울거냐, 내용, 제목, 아이콘				
+				
+				JOptionPane.showMessageDialog(loginPanel, "환영합니다.", "로그인 성공", JOptionPane.PLAIN_MESSAGE);
+				mainCardLayout.show(mainCardPanel, "homePanel");
 			}
 		});
+		signinBtn.setBounds(128, 167, 190, 33);
+		loginPanel.add(signinBtn);
 		
-		signinBtn.setBounds(148, 236, 240, 37);
-		contentPane.add(signinBtn);
+		homePanel = new JPanel();
+		homePanel.setLayout(null);
+		mainCardPanel.add(homePanel,"homePanel");
 		
-		passwordTextField = new JPasswordField();
-		passwordTextField.setBounds(146, 141, 242, 37);
-		contentPane.add(passwordTextField);
-		passwordTextField.setColumns(10);
+		
 	}
 }
