@@ -54,7 +54,13 @@ public class ServerApplication {
 							serverSocket = new ServerSocket(port);	//다른사람이 해당 포트를 사용하고있으면 오류가 나니 예외처리 해줘야함
 							
 							while(!Thread.interrupted()) {	//interrupt가 True인 상태를 False로 변경되면서 반복이 멈추고 Thread 자연스럽게 소멸됨
-								Socket socket = serverSocket.accept();	//Scanner 넥스트랑 비슷 접속기다림
+								Socket socket = serverSocket.accept();	//Scanner 넥스트랑 비슷 클라이언트 접속기다림
+								ConnectedSocket connectedSocket = new ConnectedSocket(socket);	//클라이언트가 접속하면 Thread 객체 생성
+								connectedSocket.start();   //Thread 실행
+								
+								ConnectedClientController.getInstance()
+									.getConnectedSockets().add(connectedSocket);
+								
 								System.out.println("접속!!");
 								System.out.println(socket.getInetAddress().getHostAddress());
 							}
@@ -94,6 +100,14 @@ public class ServerApplication {
 					
 				default:	// 1,2번을 제외한 다른 정수가 들어왔을 시 처리하는 부분 명령 실행 후 while 맨 위로 올라감
 					System.out.println("다시 선택하세요.");
+			}
+			
+			if(serverSocket == null) {
+				try {
+					connectionThread.join(500);		//그냥 join을 쓰면 쓰래드가 전부실행될 동안 기다리는거 500을 넣어주면 0.5초만 기다려라
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}	
 	}
