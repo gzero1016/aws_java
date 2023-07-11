@@ -1,4 +1,4 @@
-package ch26_socket.simpleGUI.server;
+package ch26_socket.test.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -18,15 +18,12 @@ public class SimpleGUIserver {
 			
 			while(true) {
 				Socket socket = serverSocket.accept();
-				System.out.println("접속");
-				ConnectedSocket connectedSocket = new ConnectedSocket(socket);	//Thread 객체
+				ConnectedSocket connectedSocket = new ConnectedSocket(socket);
+				connectedSocketList.add(connectedSocket);
 				connectedSocket.start();
-				connectedSocketList.add(connectedSocket);	//생성된 Thread 객체 리스트에 넣기
 			}
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
 }
