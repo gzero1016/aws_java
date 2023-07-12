@@ -143,43 +143,42 @@ public class ConnectedSocket extends Thread {
 				});
 				
 				//룸 안에 있는 접속한 사람들의 반복을 돌려 유저리스트 업데이트, 접속알림 띄움
-				room.getUserList().forEach(ConnectedSocket -> {
+				room.getUserList().forEach(connectedSocket -> {
 					// list에 있는 이름을 업데이트
 					RequestBodyDto<List<String>> updateUserListDto = new RequestBodyDto<List<String>> ("updateUserList", usernameList);
 					RequestBodyDto<String> joinMessageDto = new RequestBodyDto<String>("showMessage", username + "님이 들어왔습니다.");
 					
-					ServerSender.getInstance().send(ConnectedSocket.socket, updateUserListDto);
+					ServerSender.getInstance().send(connectedSocket.socket, updateUserListDto);
 					try {
 						sleep(100);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					ServerSender.getInstance().send(ConnectedSocket.socket, joinMessageDto);
+					ServerSender.getInstance().send(connectedSocket.socket, joinMessageDto);
 				});
 			}
 		});
-		
-		//클라이언트에게 두 개의 데이터를 모든 클라이언트에게 보내는 것
-		SimpleGUIserver.connectedSocketList.forEach(connectedSocket -> {
-		
-	});
-}
+	}
 	
 	private void sendMessage(String requestBody) {
 		TypeToken<RequestBodyDto<SendMessage>> typeToken = new TypeToken<>() {};
 		
+		
 		//제네릭타입안에 비어있을 경우는 .class를 사용해도 되지만 제네릭타입안에 값이 들어가는 경우는 getType으로 명확하게 명시해줘야한다.
 		RequestBodyDto<SendMessage> requestBodyDto = gson.fromJson(requestBody, typeToken.getType());
 		SendMessage sendMessage = requestBodyDto.getBody();	//Map으로 꺼낼 수 있던 것을 sendMessage 객체로 꺼낼 수 있음
-		System.out.println(sendMessage);
 		
-		//forEach를 돌려 해당 메시지를 전부에게 보여줘야함
-		SimpleGUIserver.connectedSocketList.forEach(connectedSocket -> {
-			RequestBodyDto<String> dto = 
-					new RequestBodyDto<String>("showMessage", sendMessage.getFromUsername() + ": " + sendMessage.getMessageBody());
-			
-			ServerSender.getInstance().send(connectedSocket.socket, dto);
+		SimpleGUIserver.roomList.forEach(room -> {	//roomList를 forEach로 돌려서 내가 어느 룸에 들어있는지 확인
+			if(room.getUserList().contains(this)) {	//내가 들어있는지 확인하며 내가 포함되어있으면 true 를 준다.
+				
+				//룸안에 접속한 사람들의 반복을 돌려 대화소통 SimpleGUIserver.connectedSocketList <- 요건 전체
+				room.getUserList().forEach(connectedSocket -> {
+					RequestBodyDto<String> dto = 
+							new RequestBodyDto<String>("showMessage", sendMessage.getFromUsername() + ": " + sendMessage.getMessageBody());
+					
+					ServerSender.getInstance().send(connectedSocket.socket, dto);
+				});
+			}
 		});
 	}
-	
 }

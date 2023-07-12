@@ -56,6 +56,7 @@ public class ClientReceiver extends Thread {
 		}
 	}
 	
+	
 	private void updateRoomList(String requestBody) {
 		List<String> roomList = (List<String>) gson.fromJson(requestBody, RequestBodyDto.class).getBody();
 		SimpleGUIClient.getInstance().getRoomListModel().clear();
