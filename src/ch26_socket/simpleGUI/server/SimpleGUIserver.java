@@ -6,9 +6,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch26_socket.simpleGUI.server.entity.Room;
+
 public class SimpleGUIserver {
 	
 	public static List<ConnectedSocket> connectedSocketList = new ArrayList<>();
+	public static List<Room> roomList = new ArrayList<>();	//리스트인 ConnectedSocket을 담는 Room 리스트를 생성
 	
 	public static void main(String[] args) {
 		
@@ -25,7 +28,7 @@ public class SimpleGUIserver {
 			}
 			
 		} catch (IOException e) {
-			e.printStackTrace();
+			e.printStackTrace(); 
 		}
 	}
 
